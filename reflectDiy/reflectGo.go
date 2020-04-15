@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 )
+
 type people interface {
 	move()
 }
@@ -12,7 +13,6 @@ type student struct {
 }
 
 func (*student) move() {}
-
 
 func reflectDemo() {
 	var stu people = &student{name: "huaxu"}
