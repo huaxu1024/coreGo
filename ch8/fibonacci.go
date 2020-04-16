@@ -1,25 +1,16 @@
-package main
+package ch8
 
 import (
 	"fmt"
 	"time"
 )
 
-func test() {
-	go spinner(100 * time.Millisecond)
+func fibonacci() {
+	start := time.Now()
 	const n = 45
 	fibN := fib(n)
-	fmt.Println(fibN)
-}
 
-func spinner(delay time.Duration) {
-	for {
-		for _, r := range "abcdef" {
-			fmt.Println(r)
-			time.Sleep(delay)
-		}
-	}
-
+	fmt.Printf("speed:{%s}, res:{%v}\n", time.Since(start), fibN)
 }
 
 func fib(n int) int {
