@@ -5,10 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"runtime"
+	"strconv"
 	"time"
 )
 
 var router *gin.Engine
+
+var ch chan string
 
 type Person struct {
 	Name    string `form:"name"`
@@ -17,6 +21,10 @@ type Person struct {
 }
 
 func main() {
+	ch = make(chan string)
+	go queueData("a")
+	go queueData("b")
+	go queueData("c")
 	router := gin.Default()
 	router.GET("/someGet:name/*action", getting)
 	router.GET("/getParam", gettingParam)
@@ -25,7 +33,7 @@ func main() {
 	router.POST("/somePost", posting)
 	router.POST("/upload", uploading)
 	router.Any("/anyPerson", startPage)
-
+	router.Any("/go", getGoroutineNum)
 	router.Run(":8080")
 }
 
@@ -91,10 +99,36 @@ func gettingParam(c *gin.Context) {
 	c.String(http.StatusOK, "Hello %s %s", firstName, lastName)
 }
 
-// http://localhost:8080/someGetxxxx/23232
+func getGoroutineNum(c *gin.Context) {
+	c.String(http.StatusOK, strconv.Itoa(runtime.NumGoroutine()))
+}
+
+
+
+// http://localhost:8080/someGethuaxu/23232
 func getting(c *gin.Context) {
 	name := c.Param("name")
 	action := c.Param("action")
 	message := name + " is " + action
+	go func() {
+		ch <- name
+	}()
 	c.String(http.StatusOK, message)
 }
+
+func queueData(chName string) {
+	for {
+		time.Sleep(1*time.Second)
+		name := <- ch
+		fmt.Println(chName + ":" + name)
+		if len(name) == 10 {
+			fmt.Println(chName + ": ok~")
+		} else {
+			go func() {
+				ch <- name + "a"
+			}()
+		}
+	}
+}
+
+
