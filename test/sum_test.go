@@ -1,7 +1,7 @@
 package test
 
 import (
-	"coreGo/ch3"
+	"coreGo/gobook/ch3"
 	"testing"
 )
 
